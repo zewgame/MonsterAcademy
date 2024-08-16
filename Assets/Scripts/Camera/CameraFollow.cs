@@ -1,47 +1,70 @@
 
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class CameraFollow : MonoBehaviour
 {
-    public Transform player;
-    //Transform Target;
 
-    //public float Smoothing;
-    //Vector3 offset;
+    public static CameraFollow instance;
+    private Tilemap tilemap;
+    private Vector3 dragOrigin;
+    [SerializeField] Vector2 MapEdgeDistance;
+    void Awake()
+    {
+        instance = this;
+    }
     void Start()
     {
-        //Target = player.transform;
-        //offset = transform.position - Target.position;
+
     }
 
-   
-    //void Update()
-    //{
-    //    Vector3 TargetCamPos = Target.position + (offset/3);
-    //    transform.position = Vector3.Lerp(transform.position, TargetCamPos,Smoothing*Time.deltaTime);
-    //}
+    // Update is called once per frame
+    void Update()
+    {
+        if(checkTileMap())
+        {
+            panCamera();
+        }
+    }
     private void LateUpdate()
     {
-        Transform minX, minY, maxX, maxY;
-        try
+        if (checkTileMap())
         {
-            minX = GameObject.Find("MinX").GetComponent<Transform>();
-            minY = GameObject.Find("MinY").GetComponent<Transform>();
-            maxX = GameObject.Find("MaxX").GetComponent<Transform>();
-            maxY = GameObject.Find("MaxY").GetComponent<Transform>();
-            //if (minX != null && minY != null && maxX != null && maxY != null)
-            //{
-                Vector3 pos = transform.position;
-                pos.x = Mathf.Clamp(player.position.x, minX.transform.position.x, maxX.transform.position.x);
-                pos.y = Mathf.Clamp(player.position.y, minY.transform.position.y, maxY.transform.position.y);
-                transform.position = pos;
-            //}
+            BoundsInt cellBounds = tilemap.cellBounds;
+            float minX = cellBounds.min.x + MapEdgeDistance.x;
+            float maxX = cellBounds.max.x - MapEdgeDistance.x;
+            float minY = cellBounds.min.y + MapEdgeDistance.y;
+            float maxY = cellBounds.max.y - MapEdgeDistance.y;
+
+            Vector3 pos = transform.position;
+            pos.x = Mathf.Clamp(transform.position.x, minX, maxX);
+            pos.y = Mathf.Clamp(transform.position.y, minY, maxY);
+            transform.position = pos;
+
         }
-        catch(System.Exception e)
+    }
+    private bool checkTileMap()
+    {
+        if (tilemap != null)
         {
-            Debug.LogException(e);
+            return true;
         }
-        
-       
+        return false;
+    }
+    public void setTileMap(Tilemap tm)
+    {
+        tilemap = tm;
+    }
+    private void panCamera()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            dragOrigin = gameObject.GetComponent<Camera>().ScreenToWorldPoint(Input.mousePosition);
+        }
+        if (Input.GetMouseButton(0))
+        {
+            Vector3 difference = dragOrigin - gameObject.GetComponent<Camera>().ScreenToWorldPoint(Input.mousePosition);
+            transform.position += difference;
+        }
     }
 }

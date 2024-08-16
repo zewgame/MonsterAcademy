@@ -49,7 +49,9 @@ public class JoystickMove : MonoBehaviour
           }
      }catch(Exception exc)
      {
-          changeObject();
+            changeObject();
+            Debug.LogException(exc);
+  
        
      }
        
