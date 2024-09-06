@@ -40,7 +40,7 @@ public class CameraFollow : MonoBehaviour
             pos.x = Mathf.Clamp(transform.position.x, minX, maxX);
             pos.y = Mathf.Clamp(transform.position.y, minY, maxY);
             transform.position = pos;
-
+            GameCanvas.instance.SetUpPosionBTeleMap();
         }
     }
     private bool checkTileMap()
@@ -65,6 +65,7 @@ public class CameraFollow : MonoBehaviour
         {
             Vector3 difference = dragOrigin - gameObject.GetComponent<Camera>().ScreenToWorldPoint(Input.mousePosition);
             transform.position += difference;
+           
         }
     }
 }

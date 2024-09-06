@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -6,7 +7,6 @@ using UnityEngine.Tilemaps;
 public class GameCanvas : MonoBehaviour
 {
     public static GameCanvas instance;
-    private GameObjectList gameObjectList = GameObjectList.instance;
     [Header("UI Game")]
     [SerializeField] private GameObject UI_Map;
     [SerializeField] private GameObject UI_Action;
@@ -19,29 +19,31 @@ public class GameCanvas : MonoBehaviour
     }
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        // thực thi di chuyển nút chuyển map tới đúng vị trí
-        //SetUpPosionBTeleMap();
+        
     }
     // Code Liên quan tới chuyển map ---- Chuyển Map -----
+
     public void createButtonNextMap(int idMap,GameObject optele)
     {
-        GameObject clone = Instantiate(gameObjectList.getButtonNextMap(),transform);
+        //GameObject clone = Instantiate(Buttonnext, UI_Map.transform);
+        GameObject clone = Instantiate(GameObjectList.instance.getButtonNextMap(), UI_Map.transform);
         OPteleMap.Add(optele);
         clone.GetComponent<ButtonTeleMap>().setMap(findMapbyID(idMap));
         buttonTeleList.Add(clone);
+
         SetUpPosionBTeleMap();
     }
     public Map findMapbyID(int idmap)
     {
        return getMap().Find(map => map.idMap == idmap);
     }
-    private void SetUpPosionBTeleMap()
+    public void SetUpPosionBTeleMap()
     {
         // thực thi di chuyển các nút tới đúng vị trí trong map
         if(OPteleMap.Count > 0)
@@ -52,7 +54,9 @@ public class GameCanvas : MonoBehaviour
                 {
                     int idex = OPteleMap.IndexOf(optele);
                     GameObject btnTele = buttonTeleList[idex];
-                    btnTele.transform.position = Camera.main.ScreenToWorldPoint(optele.transform.position);
+                    Vector3 pointbtn = Camera.main.WorldToScreenPoint(optele.transform.position);
+                    btnTele.transform.position = pointbtn;
+                    
                 }
             }
         }
